@@ -76,18 +76,19 @@ messages = [
 ]
 
 max_steps = 5
-
+trace_log = []
 for step in range(max_steps):
     response = client.chat.completions.create(
         model="openai/gpt-oss-120b",
         messages=messages,
         temperature=0
     )
+    
 
     output = response.choices[0].message.content
     print(f"\n--- Step {step + 1} ---")
     print("Model said:", output)
-
+    trace_log.append({"step": step + 1, "model_output": output})
     messages.append({"role": "assistant", "content": output})
 
     if output.startswith("FINAL ANSWER:"):
@@ -95,8 +96,12 @@ for step in range(max_steps):
         break
 
     elif output.startswith("ACTION:"):
-        tool_name = output.split("ACTION:")[1].split("INPUT:")[0].strip()
-        tool_input = output.split("INPUT:")[1].strip()
+        try:
+            tool_name = output.split("ACTION:")[1].split("INPUT:")[0].strip()
+            tool_input = output.split("INPUT:")[1].strip()
+        except IndexError:
+            print("Malformed ACTION from model, stopping.")
+            break
 
         if tool_name == "calculator":
             result = calculator(tool_input)
@@ -108,9 +113,16 @@ for step in range(max_steps):
             result = f"Unknown tool: {tool_name}"
 
         print("Tool used:", tool_name, "-> Result:", result)
-
+        trace_log[-1]["tool_used"] = tool_name
+        trace_log[-1]["tool_result"] = result
         messages.append({"role": "user", "content": f"OBSERVATION: {result}"})
 
+import json
+
+with open("trace_log.json", "w") as f:
+    json.dump(trace_log, f, indent=2)
+
+print("\nTrace saved to trace_log.json")
 
 
 # question = "Convert 1 mile to km?"
