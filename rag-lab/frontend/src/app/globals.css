@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/*
+  Design tokens. Declared inside @theme so Tailwind v4 emits them as CSS
+  custom properties on :root and generates matching utilities, which means
+  both var(--color-text-primary) and text-text-primary resolve to the same
+  value. This file is the only place a raw hex may appear.
+*/
+@theme {
+  --color-bg: #14161c;
+  --color-bg-panel: #1b1e26;
+  --color-bg-panel-raised: #21252f;
+  --color-border: #2c3040;
+  --color-text-primary: #f1f2f5;
+  --color-text-secondary: #9a9fb0;
+  --color-accent: #14b8a6;
+  --color-accent-hover: #0d9488;
+  --color-green: #3ecf8e;
+  --color-yellow: #f0b429;
+  --color-red: #f2545b;
+
+  /* Derived: panel background tinted with the accent, used for user turns. */
+  --color-bg-user: #1a373a;
+
+  --font-heading: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  /* Dark by default, not tied to the operating system preference. */
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.011em;
+}
+
+/* Teal focus ring on every interactive element. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+::selection {
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border: 3px solid var(--color-bg);
+  border-radius: 999px;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}

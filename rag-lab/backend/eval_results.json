@@ -1,0 +1,57 @@
+{
+  "retrieval": [
+    {
+      "mrr": 0.16666666666666666,
+      "keyword_coverage": 0.5,
+      "category": "direct_fact"
+    },
+    {
+      "mrr": 0.6,
+      "keyword_coverage": 1.0,
+      "category": "direct_fact"
+    },
+    {
+      "mrr": 0.875,
+      "keyword_coverage": 1.0,
+      "category": "direct_fact"
+    },
+    {
+      "mrr": 1.0,
+      "keyword_coverage": 1.0,
+      "category": "direct_fact"
+    }
+  ],
+  "answers": [
+    {
+      "accuracy": 4,
+      "completeness": 5,
+      "relevance": 5,
+      "category": "direct_fact"
+    },
+    {
+      "accuracy": 1,
+      "completeness": 1,
+      "relevance": 5,
+      "category": "direct_fact"
+    },
+    {
+      "accuracy": 5,
+      "completeness": 4,
+      "relevance": 5,
+      "category": "direct_fact"
+    },
+    {
+      "accuracy": 5,
+      "completeness": 5,
+      "relevance": 5,
+      "category": "direct_fact"
+    }
+  ],
+  "summary": {
+    "mrr": 0.6604166666666667,
+    "keyword_coverage": 0.875,
+    "accuracy": 3.75,
+    "completeness": 3.75,
+    "relevance": 5.0
+  }
+}
