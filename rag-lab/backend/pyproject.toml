@@ -5,7 +5,7 @@ description = "Add your description here"
 authors = [
     { name = "hamzacodev", email = "hamzacodev@gmail.com" }
 ]
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "chromadb>=1.5.9",
     "fastapi[standard]>=0.141.1",
@@ -29,3 +29,6 @@ rag-lab = "rag_lab:main"
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
+
+[tool.uv]
+package = false

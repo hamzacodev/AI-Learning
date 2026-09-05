@@ -9,10 +9,22 @@ from answer_deploy import answer_question  # fast pipeline for live chat
 
 app = FastAPI()
 
-# Allow the Next.js frontend (running on a different port) to call this API
+# Browsers block cross origin calls unless the API says otherwise, and the
+# deployed frontend is on a different domain from this API, so its origin has
+# to be listed here explicitly.
+ALLOWED_ORIGINS = [
+    "http://localhost:3000",          # local dev server
+    "https://nexara-rag.vercel.app",  # production frontend
+]
+
+# Vercel mints a fresh URL for every preview deployment, so those cannot be
+# listed one by one. Starlette matches this against the whole origin string.
+PREVIEW_ORIGIN_REGEX = r"https://nexara-[a-z0-9-]+\.vercel\.app"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=PREVIEW_ORIGIN_REGEX,
     allow_methods=["*"],
     allow_headers=["*"],
 )
