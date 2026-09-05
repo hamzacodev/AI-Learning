@@ -19,3 +19,4 @@ chat_log.jsonl
 
 # OS
 .DS_Store
+.env
