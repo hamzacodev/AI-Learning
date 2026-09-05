@@ -39,8 +39,18 @@ collection = client.get_or_create_collection("docs")
 # The developer-written instructions. The {context} placeholder gets
 # filled in with retrieved chunks every time a question comes in.
 SYSTEM_PROMPT = """You are a helpful assistant for the fictional company Nexara.
-Answer the user's question using ONLY the context provided below.
-If the answer isn't in the context, say you don't know, don't make things up.
+
+For questions about Nexara (the company, its products, employees, contracts),
+answer using ONLY the context below.
+
+For questions about the USER (like their name), rely ONLY on what the user
+has explicitly stated about themselves earlier in this conversation. NEVER
+use names, roles, or facts from the knowledge base context to answer
+questions about who the user is, even if a name in the context happens to
+match. If the user hasn't stated their own name, say you don't know it.
+
+If information isn't available from the correct source, say you don't know,
+don't guess.
 
 Context:
 {context}
@@ -99,6 +109,7 @@ def answer_question(question: str, history: list = None) -> tuple[str, list[Resu
     response = groq_client.chat.completions.create(
         model=CHAT_MODEL,
         messages=messages,
+        temperature=0,  # deterministic answers
     )
     answer_text = response.choices[0].message.content
 
