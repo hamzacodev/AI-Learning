@@ -72,28 +72,33 @@ def fetch_context(question: str) -> list[Result]:
     return chunks
 
 
-def answer_question(question: str) -> tuple[str, list[Result]]:
+def answer_question(question: str, history: list = None) -> tuple[str, list[Result]]:
     """
     FULL PIPELINE, same shape as the course's answer_question.
     1. Fetch relevant context
     2. Build the prompt with that context injected
-    3. Call the LLM
+    3. Call the LLM, with any earlier turns sitting between the system
+       prompt and the current question
     4. Return the answer text AND the sources it was based on
     """
-    # 1. Retrieval
+    # 1. Retrieval. Note this uses the raw question, so a follow-up that only
+    # makes sense in context ("what about their pricing") still searches on
+    # its own wording.
     chunks = fetch_context(question)
 
     # 2. Glue chunks into one context block, inject into the system prompt
     context_block = "\n\n".join(c.text for c in chunks)
     system_prompt = SYSTEM_PROMPT.format(context=context_block)
 
-    # 3. Call Groq's chat model with system prompt + user question
+    # 3. Call Groq's chat model with system prompt, prior turns, then question
+    messages = [{"role": "system", "content": system_prompt}]
+    if history:
+        messages.extend(history)
+    messages.append({"role": "user", "content": question})
+
     response = groq_client.chat.completions.create(
         model=CHAT_MODEL,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": question},
-        ],
+        messages=messages,
     )
     answer_text = response.choices[0].message.content
 

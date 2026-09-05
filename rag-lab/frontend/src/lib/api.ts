@@ -19,6 +19,12 @@ export interface Source {
   doc_type: string;
 }
 
+/** One earlier turn, in the shape the chat model expects. */
+export interface ChatTurn {
+  role: "user" | "assistant";
+  content: string;
+}
+
 export interface AskResponse {
   answer: string;
   sources: Source[];
@@ -110,9 +116,14 @@ function describeNetworkFailure(): ApiError {
 
 /* --- Endpoints --- */
 
-/** POST /ask, returns the generated answer plus the chunks it was built from. */
+/**
+ * POST /ask, returns the generated answer plus the chunks it was built from.
+ * `history` carries the earlier turns of the conversation, excluding the
+ * question being asked, which travels in its own field.
+ */
 export async function askQuestion(
   question: string,
+  history: ChatTurn[] = [],
   signal?: AbortSignal,
 ): Promise<AskResponse> {
   const { signal: combined, done } = withTimeout(ASK_TIMEOUT_MS, signal);
@@ -122,7 +133,7 @@ export async function askQuestion(
     response = await fetch(`${API_BASE}/ask`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question }),
+      body: JSON.stringify({ question, history }),
       signal: combined,
     });
   } catch (error) {

@@ -37,6 +37,9 @@ MAX_CHAT_LOG_ENTRIES = 50
 
 class AskRequest(BaseModel):
     question: str
+    # Earlier turns as {"role": "user"|"assistant", "content": str}. Defaults
+    # to empty so an older client that omits the field still works.
+    history: list[dict] = []
 
 
 def read_chat_log() -> list[dict]:
@@ -76,7 +79,7 @@ def append_chat_log(entry: dict) -> None:
 
 @app.post("/ask")
 def ask(request: AskRequest):
-    answer, sources = answer_question(request.question)
+    answer, sources = answer_question(request.question, request.history)
     source_list = [{"source": s.source, "doc_type": s.doc_type} for s in sources]
 
     append_chat_log(

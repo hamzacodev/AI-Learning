@@ -6,7 +6,7 @@ import AppHeader from "@/components/AppHeader";
 import ChatComposer from "@/components/ChatComposer";
 import ChatMessage, { type ChatMessageData } from "@/components/ChatMessage";
 import ThinkingIndicator from "@/components/ThinkingIndicator";
-import { askQuestion } from "@/lib/api";
+import { askQuestion, type ChatTurn } from "@/lib/api";
 
 const EXAMPLE_QUESTIONS = [
   "Who founded Nexara and where is it headquartered?",
@@ -51,6 +51,17 @@ export default function ChatPage() {
     const trimmed = question.trim();
     if (!trimmed || isPending) return;
 
+    /*
+      The conversation as it stands before this question. `messages` still
+      holds the pre-append list here, since the new turn goes in through a
+      functional update below, so the question is not duplicated into its own
+      history. Error bubbles are UI artifacts rather than real assistant
+      replies, so they are left out, and only role and content are sent.
+    */
+    const history: ChatTurn[] = messages
+      .filter((message) => !message.isError)
+      .map(({ role, content }) => ({ role, content }));
+
     appendMessage({
       id: crypto.randomUUID(),
       role: "user",
@@ -63,7 +74,7 @@ export default function ChatPage() {
     controllerRef.current = controller;
 
     try {
-      const result = await askQuestion(trimmed, controller.signal);
+      const result = await askQuestion(trimmed, history, controller.signal);
       appendMessage({
         id: crypto.randomUUID(),
         role: "assistant",
